@@ -1,8 +1,19 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="metal_world_radio"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true">
+        <service android:name="com.ryanheise.audioservice.AudioService"
+         android:foregroundServiceType="mediaPlayback"
+         android:export="true"
+         tools:ignore="Instantiatable">
+    <intent-filter>
+        <action android:name="android.intent.action.MEDIA_BUTTON" />
+        <action android:name="android.intent.action.MUSIC_PLAYER" />
+    </intent-filter>
+</service>
         <activity
             android:name=".MainActivity"
             android:exported="true"

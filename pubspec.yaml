@@ -32,6 +32,9 @@ dependencies:
     sdk: flutter
   http: ^1.2.0
   flutter_riverpod: ^2.5.1
+  just_audio: ^0.9.36
+  audio_service: ^0.18.12  # <--- Esta es la que hace el trabajo pesado de fondo
+  cached_network_image: ^3.3.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
