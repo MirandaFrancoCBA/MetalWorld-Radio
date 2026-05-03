@@ -1,51 +1,55 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:media_kit/media_kit.dart';
+import 'package:flutter/foundation.dart';
 
 class MyAudioHandler extends BaseAudioHandler with SeekHandler {
-  final _player = AudioPlayer();
+  final Player _player = Player();
 
   MyAudioHandler() {
-    // Notificar al sistema sobre el estado del reproductor
-    _player.playbackEventStream.map(_transformEvent).pipe(playbackState);
+    // Escuchar estado del player
+    _player.stream.playing.listen((playing) {
+      playbackState.add(_buildState(playing));
+    });
   }
 
   @override
   Future<void> playMediaItem(MediaItem item) async {
-    mediaItem.add(item); // Actualiza qué estamos escuchando
+    mediaItem.add(item);
+
     try {
-      await _player.setAudioSource(AudioSource.uri(Uri.parse(item.id)));
-      _player.play();
+      await _player.open(
+        Media(item.id), // 🔥 acá va la URL
+        play: true,
+      );
     } catch (e) {
-      print("Error reproduciendo: $e");
+      debugPrint("URL: ${item.id}");
+      debugPrint("Error de streaming: $e");
     }
   }
 
   @override
-  Future<void> play() => _player.play();
+  Future<void> play() async {
+    await _player.play();
+  }
 
   @override
-  Future<void> pause() => _player.pause();
+  Future<void> pause() async {
+    await _player.pause();
+  }
 
   @override
-  Future<void> stop() => _player.stop();
+  Future<void> stop() async {
+    await _player.stop();
+  }
 
-  // Transforma eventos internos a eventos que entiende el celular (notificación)
-  PlaybackState _transformEvent(PlaybackEvent event) {
+  PlaybackState _buildState(bool playing) {
     return PlaybackState(
       controls: [
         MediaControl.stop,
-        if (_player.playing) MediaControl.pause else MediaControl.play,
+        if (playing) MediaControl.pause else MediaControl.play,
       ],
-      systemActions: const {MediaAction.seek},
-      androidCompactActionIndices: const [0, 1],
-      processingState: const {
-        ProcessingState.idle: AudioProcessingState.idle,
-        ProcessingState.loading: AudioProcessingState.loading,
-        ProcessingState.buffering: AudioProcessingState.buffering,
-        ProcessingState.ready: AudioProcessingState.ready,
-        ProcessingState.completed: AudioProcessingState.completed,
-      }[_player.processingState]!,
-      playing: _player.playing,
+      playing: playing,
+      processingState: AudioProcessingState.ready,
     );
   }
 }
