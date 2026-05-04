@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/favorites_provider.dart';
-import '../../core/player/radio_player.dart';
+import '../../main.dart';
+import 'package:audio_service/audio_service.dart';
 //import 'package:media_kit/media_kit.dart';
 
 class FavoritesView extends ConsumerWidget {
@@ -10,7 +11,6 @@ class FavoritesView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final favorites = ref.watch(favoritesProvider);
-    final player = ref.read(radioPlayerProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Favoritos')),
@@ -35,7 +35,9 @@ class FavoritesView extends ConsumerWidget {
                     },
                   ),
                   onTap: () async {
-                    await player.play(r.url, r.name);
+                    audioHandler.playMediaItem(
+                      MediaItem(id: r.url, title: r.name, album: "Metal Radio"),
+                    );
                   },
                 );
               },

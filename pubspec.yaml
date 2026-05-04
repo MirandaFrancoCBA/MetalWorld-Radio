@@ -38,6 +38,7 @@ dependencies:
   media_kit_native_event_loop: ^1.0.4
   media_kit_libs_video: ^1.0.4
   shared_preferences: ^2.2.2
+  audio_service: ^0.18.12
 
   cupertino_icons: ^1.0.8
 

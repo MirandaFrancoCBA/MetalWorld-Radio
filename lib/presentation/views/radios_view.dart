@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/radio_provider.dart';
 import '../providers/favorites_provider.dart';
-import '../../core/player/radio_player.dart';
 //import 'package:media_kit/media_kit.dart';
+import '../../main.dart';
+import 'package:audio_service/audio_service.dart';
 
 class RadiosView extends ConsumerWidget {
   const RadiosView({super.key});
@@ -11,14 +12,12 @@ class RadiosView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final radios = ref.watch(radiosProvider);
-    final player = ref.read(radioPlayerProvider.notifier);
     final favorites = ref.watch(favoritesProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Metal Radios')),
       body: radios.when(
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (list) => ListView.builder(
           itemCount: list.length,
@@ -39,7 +38,9 @@ class RadiosView extends ConsumerWidget {
                 },
               ),
               onTap: () async {
-                await player.play(r.url, r.name);
+                audioHandler.playMediaItem(
+                  MediaItem(id: r.url, title: r.name, album: "Metal Radio"),
+                );
               },
             );
           },

@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:media_kit/media_kit.dart';
+import 'package:audio_service/audio_service.dart';
+import '../../main.dart';
 
 class RadioPlayerState {
   final bool playing;
@@ -31,9 +33,18 @@ class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
   }
 
   Future<void> play(String url, String title) async {
-    await player.open(Media(url), play: true);
-    state = state.copyWith(currentTitle: title);
-  }
+  await player.open(Media(url), play: true);
+
+  state = state.copyWith(currentTitle: title);
+
+  audioHandler.mediaItem.add(
+    MediaItem(
+      id: url,
+      title: title,
+      album: "Metal Radio",
+    ),
+  );
+}
 
   Future<void> pause() => player.pause();
 
