@@ -1,70 +1,90 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/radio_provider.dart';
+import 'radios_view.dart';
+import 'favorites_view.dart';
 import '../../core/player/radio_player.dart';
-import 'package:media_kit/media_kit.dart';
 
-class HomePage extends ConsumerWidget {
+class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final radios = ref.watch(radiosProvider);
-    final player = ref.watch(playerProvider);
+  ConsumerState<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends ConsumerState<HomePage> {
+  int index = 0;
+
+  final pages = const [
+    RadiosView(),
+    FavoritesView(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Metal Radio')),
-      body: radios.when(
-        loading: () =>
-            const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (list) => ListView.builder(
-          itemCount: list.length,
-          itemBuilder: (context, i) {
-            final r = list[i];
-            return ListTile(
-              title: Text(r.name),
-              onTap: () async {
-                await player.open(
-                  Media(r.url),
-                  play: true,
-                );
-              },
-            );
-          },
-        ),
+      body: Column(
+        children: [
+          Expanded(child: pages[index]),
+          const _MiniPlayer(),
+        ],
       ),
-      bottomNavigationBar: StreamBuilder<bool>(
-        stream: player.stream.playing,
-        builder: (context, snapshot) {
-          final playing = snapshot.data ?? false;
-
-          return Container(
-            color: Colors.black,
-            child: Row(
-              children: [
-                const SizedBox(width: 10),
-                const Text(
-                  'Playing...',
-                  style: TextStyle(color: Colors.white),
-                ),
-                const Spacer(),
-                IconButton(
-                  icon: Icon(
-                    playing ? Icons.pause : Icons.play_arrow,
-                  ),
-                  onPressed: () {
-                    playing ? player.pause() : player.play();
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.stop),
-                  onPressed: () => player.stop(),
-                ),
-              ],
-            ),
-          );
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: index,
+        onTap: (value) {
+          setState(() => index = value);
         },
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.radio),
+            label: 'Radios',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.favorite),
+            label: 'Favoritos',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _MiniPlayer extends ConsumerWidget {
+  const _MiniPlayer();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(radioPlayerProvider);
+    final player = ref.read(radioPlayerProvider.notifier);
+
+    if (state.currentTitle == null) return const SizedBox();
+
+    return Container(
+      color: Colors.black,
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      height: 60,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              state.currentTitle!,
+              style: const TextStyle(color: Colors.white),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          IconButton(
+            icon: Icon(
+              state.playing ? Icons.pause : Icons.play_arrow,
+              color: Colors.white,
+            ),
+            onPressed: () {
+              state.playing ? player.pause() : player.player.play();
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.stop, color: Colors.red),
+            onPressed: () => player.stop(),
+          ),
+        ],
       ),
     );
   }
