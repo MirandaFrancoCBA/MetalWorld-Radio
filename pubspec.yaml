@@ -34,11 +34,11 @@ dependencies:
   flutter_riverpod: ^2.5.1
   cached_network_image: ^3.3.0
 
-  media_kit: ^1.1.10
-  media_kit_native_event_loop: ^1.0.4
-  media_kit_libs_video: ^1.0.4
+  media_kit: ^1.2.6
+  media_kit_native_event_loop: ^1.0.9
+  media_kit_libs_video: ^1.0.7
+  audio_service: ^0.18.18
   shared_preferences: ^2.2.2
-  audio_service: ^0.18.12
 
   cupertino_icons: ^1.0.8
 

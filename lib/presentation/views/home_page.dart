@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'radios_view.dart';
 import 'favorites_view.dart';
 import '../../core/player/radio_player.dart';
+import '../../main.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -54,7 +55,6 @@ class _MiniPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(radioPlayerProvider);
-    final player = ref.read(radioPlayerProvider.notifier);
 
     if (state.currentTitle == null) return const SizedBox();
 
@@ -77,12 +77,14 @@ class _MiniPlayer extends ConsumerWidget {
               color: Colors.white,
             ),
             onPressed: () {
-              state.playing ? player.pause() : player.player.play();
+              state.playing
+                  ? audioHandler.pause()
+                  : audioHandler.play();
             },
           ),
           IconButton(
             icon: const Icon(Icons.stop, color: Colors.red),
-            onPressed: () => player.stop(),
+            onPressed: () => audioHandler.stop(),
           ),
         ],
       ),

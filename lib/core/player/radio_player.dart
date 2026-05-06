@@ -1,5 +1,4 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
 import 'package:audio_service/audio_service.dart';
 import '../../main.dart';
 
@@ -24,41 +23,34 @@ class RadioPlayerState {
 }
 
 class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
-  late final Player player;
-
   RadioPlayerNotifier() : super(RadioPlayerState(playing: false)) {
-    player = Player(); // ✅ se crea en el momento correcto
-
-    player.stream.playing.listen((playing) {
-      state = state.copyWith(playing: playing);
+    // 🔥 Escuchamos el estado REAL del audio handler
+    audioHandler.playbackState.listen((playback) {
+      state = state.copyWith(playing: playback.playing);
     });
   }
 
   Future<void> play(String url, String title) async {
-    await player.open(Media(url), play: true);
+    final item = MediaItem(
+      id: url,
+      title: title,
+      album: "Metal Radio",
+    );
+
+    await audioHandler.playMediaItem(item);
 
     state = state.copyWith(currentTitle: title);
-
-    audioHandler.mediaItem.add(
-      MediaItem(
-        id: url,
-        title: title,
-        album: "Metal Radio",
-      ),
-    );
   }
 
-  Future<void> pause() => player.pause();
+  Future<void> pause() => audioHandler.pause();
 
   Future<void> stop() async {
-    await player.stop();
+    await audioHandler.stop();
     state = state.copyWith(currentTitle: null);
   }
 }
 
 final radioPlayerProvider =
     StateNotifierProvider<RadioPlayerNotifier, RadioPlayerState>((ref) {
-  final notifier = RadioPlayerNotifier();
-  ref.onDispose(() => notifier.player.dispose());
-  return notifier;
+  return RadioPlayerNotifier();
 });
