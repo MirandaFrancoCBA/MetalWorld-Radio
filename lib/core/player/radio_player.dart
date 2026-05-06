@@ -24,27 +24,29 @@ class RadioPlayerState {
 }
 
 class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
-  final Player player = Player();
+  late final Player player;
 
   RadioPlayerNotifier() : super(RadioPlayerState(playing: false)) {
+    player = Player(); // ✅ se crea en el momento correcto
+
     player.stream.playing.listen((playing) {
       state = state.copyWith(playing: playing);
     });
   }
 
   Future<void> play(String url, String title) async {
-  await player.open(Media(url), play: true);
+    await player.open(Media(url), play: true);
 
-  state = state.copyWith(currentTitle: title);
+    state = state.copyWith(currentTitle: title);
 
-  audioHandler.mediaItem.add(
-    MediaItem(
-      id: url,
-      title: title,
-      album: "Metal Radio",
-    ),
-  );
-}
+    audioHandler.mediaItem.add(
+      MediaItem(
+        id: url,
+        title: title,
+        album: "Metal Radio",
+      ),
+    );
+  }
 
   Future<void> pause() => player.pause();
 

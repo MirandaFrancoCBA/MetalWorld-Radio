@@ -1,10 +1,10 @@
 import 'package:audio_service/audio_service.dart';
-import 'radio_player.dart';
+import 'package:media_kit/media_kit.dart';
 
 class MyAudioHandler extends BaseAudioHandler {
-  final RadioPlayerNotifier player;
+  final Player player = Player();
 
-  MyAudioHandler(this.player) {
+  MyAudioHandler() {
     // Estado inicial
     playbackState.add(
       PlaybackState(
@@ -13,32 +13,37 @@ class MyAudioHandler extends BaseAudioHandler {
         processingState: AudioProcessingState.idle,
       ),
     );
+
+    // Escuchar cambios reales del player
+    player.stream.playing.listen((playing) {
+      playbackState.add(
+        PlaybackState(
+          controls: [
+            MediaControl.stop,
+            if (playing) MediaControl.pause else MediaControl.play,
+          ],
+          playing: playing,
+          processingState: AudioProcessingState.ready,
+        ),
+      );
+    });
   }
 
   @override
-  Future<void> playMediaItem(MediaItem mediaItem) async {
-    this.mediaItem.add(mediaItem);
+  Future<void> playMediaItem(MediaItem item) async {
+    mediaItem.add(item);
 
-    await player.play(mediaItem.id, mediaItem.title);
-
-    playbackState.add(
-      PlaybackState(
-        controls: [MediaControl.stop, MediaControl.pause],
-        playing: true,
-        processingState: AudioProcessingState.ready,
-      ),
+    await player.open(
+      Media(item.id),
+      play: true,
     );
   }
 
   @override
-  Future<void> play() async {
-    await player.player.play();
-  }
+  Future<void> play() => player.play();
 
   @override
-  Future<void> pause() async {
-    await player.pause();
-  }
+  Future<void> pause() => player.pause();
 
   @override
   Future<void> stop() async {
