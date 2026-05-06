@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:media_kit/media_kit.dart';
+import 'audio_handler.dart';
 
 class RadioPlayerState {
   final bool playing;
@@ -18,36 +18,35 @@ class RadioPlayerState {
 }
 
 class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
-  final Player _player = Player();
+  final RadioAudioHandler _handler;
 
-  RadioPlayerNotifier() : super(RadioPlayerState(playing: false)) {
-    _player.stream.playing.listen((playing) {
-      state = state.copyWith(playing: playing);
+  RadioPlayerNotifier(this._handler) : super(RadioPlayerState(playing: false)) {
+    _handler.playbackState.listen((pb) {
+      state = state.copyWith(playing: pb.playing);
     });
   }
 
   Future<void> play(String url, String title) async {
-    await _player.open(Media(url), play: true);
+    await _handler.playUrl(url, title);
     state = state.copyWith(currentTitle: title, currentUrl: url);
   }
 
-  Future<void> pause() async {
-    await _player.pause();
-  }
+  Future<void> pause() => _handler.pause();
 
   Future<void> stop() async {
-    await _player.stop();
-    state = state.copyWith(currentTitle: null);
-  }
-
-  @override
-  void dispose() {
-    _player.dispose();
-    super.dispose();
+    await _handler.stop();
+    state = state.copyWith(currentTitle: null, currentUrl: null);
   }
 }
 
+final audioHandlerProvider = Provider<RadioAudioHandler>((ref) {
+  final handler = RadioAudioHandler();
+  ref.onDispose(() => handler.dispose());
+  return handler;
+});
+
 final radioPlayerProvider =
     StateNotifierProvider<RadioPlayerNotifier, RadioPlayerState>((ref) {
-  return RadioPlayerNotifier();
+  final handler = ref.watch(audioHandlerProvider);
+  return RadioPlayerNotifier(handler);
 });
