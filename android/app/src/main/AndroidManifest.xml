@@ -1,47 +1,32 @@
-<application
-    android:label="Metal Radio"
-    android:name="${applicationName}"
-    android:icon="@mipmap/ic_launcher"
-    android:usesCleartextTraffic="true"
-    android:hardwareAccelerated="true">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <activity
-        android:name=".MainActivity"
-        android:exported="true"
-        android:launchMode="singleTop"
-        android:theme="@style/LaunchTheme"
-        android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-        android:hardwareAccelerated="true"
-        android:windowSoftInputMode="adjustResize">
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN"/>
-            <category android:name="android.intent.category.LAUNCHER"/>
-        </intent-filter>
-    </activity>
+    <application
+        android:label="Metal Radio"
+        android:name="${applicationName}"
+        android:icon="@mipmap/ic_launcher"
+        android:usesCleartextTraffic="true"
+        android:hardwareAccelerated="true">
 
-    <!-- 🔥 ESTO TE FALTABA -->
-    <meta-data
-        android:name="com.ryanheise.audioservice.AudioServiceActivity"
-        android:value="com.example.metal_world_radio.MainActivity"/>
+        <meta-data
+            android:name="flutterEmbedding"
+            android:value="2"/>
 
-    <service
-        android:name="com.ryanheise.audioservice.AudioService"
-        android:foregroundServiceType="mediaPlayback"
-        android:exported="true">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop"
+            android:theme="@style/LaunchTheme"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:hardwareAccelerated="true"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
 
-        <intent-filter>
-            <action android:name="android.intent.action.MEDIA_BUTTON" />
-            <action android:name="android.intent.action.MUSIC_PLAYER" />
-        </intent-filter>
-    </service>
-
-    <receiver
-        android:name="com.ryanheise.audioservice.MediaButtonReceiver"
-        android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MEDIA_BUTTON" />
-        </intent-filter>
-    </receiver>
-
-</application>
+    </application>
+</manifest>

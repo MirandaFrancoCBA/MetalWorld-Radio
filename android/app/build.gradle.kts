@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.example.metal_world_radio"
         // Cambia estas tres líneas:
-        minSdk = flutter.minSdkVersion
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"

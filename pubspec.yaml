@@ -33,13 +33,10 @@ dependencies:
   http: ^1.2.0
   flutter_riverpod: ^2.5.1
   cached_network_image: ^3.3.0
-
   media_kit: ^1.2.6
   media_kit_native_event_loop: ^1.0.9
   media_kit_libs_video: ^1.0.7
-  audio_service: ^0.18.18
   shared_preferences: ^2.2.2
-
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

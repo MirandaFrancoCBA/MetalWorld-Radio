@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/favorites_provider.dart';
-import '../../main.dart';
-import 'package:audio_service/audio_service.dart';
-//import 'package:media_kit/media_kit.dart';
+import '../../core/player/radio_player.dart';
 
 class FavoritesView extends ConsumerWidget {
   const FavoritesView({super.key});
@@ -25,7 +23,6 @@ class FavoritesView extends ConsumerWidget {
               itemCount: favorites.length,
               itemBuilder: (context, i) {
                 final r = favorites[i];
-
                 return ListTile(
                   title: Text(r.name),
                   trailing: IconButton(
@@ -34,10 +31,8 @@ class FavoritesView extends ConsumerWidget {
                       ref.read(favoritesProvider.notifier).toggle(r);
                     },
                   ),
-                  onTap: () async {
-                    audioHandler.playMediaItem(
-                      MediaItem(id: r.url, title: r.name, album: "Metal Radio"),
-                    );
+                  onTap: () {
+                    ref.read(radioPlayerProvider.notifier).play(r.url, r.name);
                   },
                 );
               },

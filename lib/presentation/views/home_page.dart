@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'radios_view.dart';
 import 'favorites_view.dart';
 import '../../core/player/radio_player.dart';
-import '../../main.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -15,10 +14,7 @@ class HomePage extends ConsumerStatefulWidget {
 class _HomePageState extends ConsumerState<HomePage> {
   int index = 0;
 
-  final pages = const [
-    RadiosView(),
-    FavoritesView(),
-  ];
+  final pages = const [RadiosView(), FavoritesView()];
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +27,9 @@ class _HomePageState extends ConsumerState<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: index,
-        onTap: (value) {
-          setState(() => index = value);
-        },
+        onTap: (value) => setState(() => index = value),
         items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.radio),
-            label: 'Radios',
-          ),
+          BottomNavigationBarItem(icon: Icon(Icons.radio), label: 'Radios'),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
             label: 'Favoritos',
@@ -55,6 +46,7 @@ class _MiniPlayer extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(radioPlayerProvider);
+    final notifier = ref.read(radioPlayerProvider.notifier);
 
     if (state.currentTitle == null) return const SizedBox();
 
@@ -76,15 +68,13 @@ class _MiniPlayer extends ConsumerWidget {
               state.playing ? Icons.pause : Icons.play_arrow,
               color: Colors.white,
             ),
-            onPressed: () {
-              state.playing
-                  ? audioHandler.pause()
-                  : audioHandler.play();
-            },
+            onPressed: () => state.playing
+                ? notifier.pause()
+                : notifier.play(state.currentUrl!, state.currentTitle!),
           ),
           IconButton(
             icon: const Icon(Icons.stop, color: Colors.red),
-            onPressed: () => audioHandler.stop(),
+            onPressed: () => notifier.stop(),
           ),
         ],
       ),
