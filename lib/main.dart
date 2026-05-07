@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:audio_service/audio_service.dart';
 import 'core/player/audio_handler.dart';
 import 'core/player/radio_player.dart';
-import 'presentation/views/home_page.dart';
+import 'presentation/views/splash_page.dart';
+import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,13 +19,15 @@ Future<void> main() async {
     ),
   );
 
-  runApp(ProviderScope(
-    overrides: [
-      audioHandlerProvider.overrideWithValue(handler
-      ),
-    ],
-    child: const MyApp(),
-  ));
+  // ✅ Splash visible 3 segundos
+  await Future.delayed(const Duration(seconds: 3));
+
+  runApp(
+    ProviderScope(
+      overrides: [audioHandlerProvider.overrideWithValue(handler)],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -35,7 +38,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: const HomePage(),
+      home: const SplashPage(),
     );
   }
 }
