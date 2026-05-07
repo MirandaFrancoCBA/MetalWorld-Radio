@@ -27,9 +27,9 @@ class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
   }
 
   Future<void> play(String url, String title) async {
-    await _handler.playUrl(url, title);
-    state = state.copyWith(currentTitle: title, currentUrl: url);
-  }
+  state = state.copyWith(currentTitle: title, currentUrl: url, playing: true);
+  await _handler.playUrl(url, title);
+}
 
   Future<void> pause() => _handler.pause();
 

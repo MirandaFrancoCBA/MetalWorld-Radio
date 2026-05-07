@@ -38,7 +38,7 @@ class _HomePageState extends ConsumerState<HomePage> {
             label: 'Radios',
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.sports_bar),  
+            icon: Icon(Icons.sports_bar),
             label: 'Favoritos',
           ),
         ],
@@ -68,7 +68,6 @@ class _MiniPlayer extends ConsumerWidget {
       height: 70,
       child: Row(
         children: [
-          // Ícono de radio animado
           Container(
             width: 40,
             height: 40,
@@ -85,7 +84,6 @@ class _MiniPlayer extends ConsumerWidget {
             ),
           ),
           const SizedBox(width: 12),
-          // Título
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +111,6 @@ class _MiniPlayer extends ConsumerWidget {
               ],
             ),
           ),
-          // Botones
           IconButton(
             icon: Icon(
               state.playing ? Icons.pause_circle : Icons.play_circle,

@@ -17,27 +17,33 @@ class RadioAudioHandler extends BaseAudioHandler {
   }
 
   void _updatePlaybackState(bool playing) {
-    playbackState.add(PlaybackState(
-      controls: [
-        MediaControl.stop,
-        if (playing) MediaControl.pause else MediaControl.play,
-      ],
-      androidCompactActionIndices: const [0, 1],
-      processingState: AudioProcessingState.ready,
-      playing: playing,
-    ));
+    playbackState.add(
+      PlaybackState(
+        controls: [
+          MediaControl.stop,
+          if (playing) MediaControl.pause else MediaControl.play,
+        ],
+        androidCompactActionIndices: const [0, 1],
+        processingState: AudioProcessingState.ready,
+        playing: playing,
+      ),
+    );
   }
 
   Future<void> playUrl(String url, String title) async {
-    mediaItem.add(MediaItem(
-      id: url,
-      title: title,
-      album: 'Metal Radio',
-      displayTitle: title,
-      displaySubtitle: 'Metal Radio',
-    ));
+    mediaItem.add(
+      MediaItem(
+        id: url,
+        title: title,
+        album: 'Metal Radio',
+        displayTitle: title,
+        displaySubtitle: 'Metal Radio',
+      ),
+    );
     await _player.setUrl(url);
     await _player.play();
+    // Forzar actualización del estado
+    _updatePlaybackState(true);
   }
 
   @override
@@ -49,11 +55,13 @@ class RadioAudioHandler extends BaseAudioHandler {
   @override
   Future<void> stop() async {
     await _player.stop();
-    playbackState.add(PlaybackState(
-      controls: [MediaControl.play],
-      processingState: AudioProcessingState.idle,
-      playing: false,
-    ));
+    playbackState.add(
+      PlaybackState(
+        controls: [MediaControl.play],
+        processingState: AudioProcessingState.idle,
+        playing: false,
+      ),
+    );
   }
 
   void dispose() => _player.dispose();

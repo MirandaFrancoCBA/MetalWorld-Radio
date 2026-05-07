@@ -9,9 +9,7 @@ class FavoritesService {
     final prefs = await SharedPreferences.getInstance();
     final data = prefs.getStringList(_key) ?? [];
 
-    return data
-        .map((e) => RadioStation.fromJson(json.decode(e)))
-        .toList();
+    return data.map((e) => RadioStation.fromJson(json.decode(e))).toList();
   }
 
   Future<void> toggleFavorite(RadioStation radio) async {
@@ -29,11 +27,16 @@ class FavoritesService {
         return r.url == radio.url;
       });
     } else {
-      data.add(json.encode({
-        'name': radio.name,
-        'url_resolved': radio.url,
-        'favicon': radio.favicon,
-      }));
+      data.add(
+        json.encode({
+          'name': radio.name,
+          'url_resolved': radio.url,
+          'favicon': radio.favicon,
+          'country': radio.country, 
+          'countrycode': radio.countryCode, 
+          'tags': radio.tags.join(','), 
+        }),
+      );
     }
 
     await prefs.setStringList(_key, data);
