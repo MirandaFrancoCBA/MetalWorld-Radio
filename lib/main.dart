@@ -20,7 +20,8 @@ Future<void> main() async {
 
   runApp(ProviderScope(
     overrides: [
-      audioHandlerProvider.overrideWithValue(handler),
+      audioHandlerProvider.overrideWithValue(handler
+      ),
     ],
     child: const MyApp(),
   ));
