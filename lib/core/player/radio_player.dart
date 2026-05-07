@@ -39,11 +39,9 @@ class RadioPlayerNotifier extends StateNotifier<RadioPlayerState> {
   }
 }
 
-final audioHandlerProvider = Provider<RadioAudioHandler>((ref) {
-  final handler = RadioAudioHandler();
-  ref.onDispose(() => handler.dispose());
-  return handler;
-});
+final audioHandlerProvider = Provider<RadioAudioHandler>(
+  (ref) => throw UnimplementedError('audioHandlerProvider must be overridden'),
+);
 
 final radioPlayerProvider =
     StateNotifierProvider<RadioPlayerNotifier, RadioPlayerState>((ref) {
