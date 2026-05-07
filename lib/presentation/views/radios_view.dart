@@ -28,7 +28,6 @@ class RadiosView extends ConsumerWidget {
     final playerState = ref.watch(radioPlayerProvider);
     final selectedTag = ref.watch(selectedTagProvider);
     final selectedCountry = ref.watch(selectedCountryProvider);
-    final countries = ref.watch(availableCountriesProvider);
 
     return Scaffold(
       backgroundColor: const Color(0xFF0A0A0A),
@@ -49,6 +48,29 @@ class RadiosView extends ConsumerWidget {
             ),
           ],
         ),
+        actions: [
+          Stack(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.tune, color: Colors.white),
+                onPressed: () => _showFilters(context, ref),
+              ),
+              if (selectedTag != null || selectedCountry != null)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: Container(
+                    width: 8,
+                    height: 8,
+                    decoration: const BoxDecoration(
+                      color: Color(0xFFCC0000),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(1),
           child: Container(height: 1, color: const Color(0xFFCC0000)),
@@ -91,104 +113,6 @@ class RadiosView extends ConsumerWidget {
               ),
             ),
           ),
-
-          // Chips de subgénero
-          SizedBox(
-            height: 40,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              itemCount: _metalTags.length,
-              itemBuilder: (context, i) {
-                final tag = _metalTags[i];
-                final isSelected = selectedTag == tag;
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    materialTapTargetSize:
-                        MaterialTapTargetSize.shrinkWrap, // ← agregá
-                    labelPadding: const EdgeInsets.symmetric(
-                      horizontal: 4,
-                    ), // ← agregá
-                    label: Text(
-                      tag.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        letterSpacing: 0.5, // ← reducí de 1 a 0.5
-                        color: isSelected ? Colors.white : Colors.grey,
-                        fontWeight: isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                    selected: isSelected,
-                    onSelected: (_) {
-                      ref.read(selectedTagProvider.notifier).state = isSelected
-                          ? null
-                          : tag;
-                    },
-                    backgroundColor: const Color(0xFF1A1A1A),
-                    selectedColor: const Color(0xFFCC0000),
-                    checkmarkColor: Colors.white,
-                    side: BorderSide(
-                      color: isSelected
-                          ? const Color(0xFFCC0000)
-                          : const Color(0xFF333333),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-
-          // Dropdown de país
-          if (countries.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
-              child: DropdownButtonFormField<String?>(
-                value: selectedCountry,
-                dropdownColor: const Color(0xFF1A1A1A),
-                style: const TextStyle(color: Colors.white, fontSize: 13),
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(
-                    Icons.flag,
-                    color: Colors.grey,
-                    size: 18,
-                  ),
-                  hintText: 'Todos los países',
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  filled: true,
-                  fillColor: const Color(0xFF1A1A1A),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF333333)),
-                  ),
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFF333333)),
-                  ),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    borderSide: const BorderSide(color: Color(0xFFCC0000)),
-                  ),
-                ),
-                items: [
-                  const DropdownMenuItem(
-                    value: null,
-                    child: Text('Todos los países'),
-                  ),
-                  ...countries.map(
-                    (e) => DropdownMenuItem(
-                      value: e.key,
-                      child: Text('${e.key}  ${e.value}'),
-                    ),
-                  ),
-                ],
-                onChanged: (v) =>
-                    ref.read(selectedCountryProvider.notifier).state = v,
-              ),
-            ),
 
           // Contador de resultados
           filteredAsync.maybeWhen(
@@ -326,6 +250,236 @@ class RadiosView extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _showFilters(BuildContext context, WidgetRef ref) {
+  
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFF111111),
+      isScrollControlled: true, // ← agregá esto
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        side: BorderSide(color: Color(0xFFCC0000), width: 1),
+      ),
+      builder: (context) => Consumer(
+        builder: (context, ref, _) {
+          final tag = ref.watch(selectedTagProvider);
+          
+          return Padding(
+            padding: EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 16,
+              bottom: MediaQuery.of(context).viewInsets.bottom + 16, // ← y esto
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Header
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'FILTROS',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: 3,
+                        fontSize: 16,
+                      ),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        ref.read(selectedTagProvider.notifier).state = null;
+                        ref.read(selectedCountryProvider.notifier).state = null;
+                      },
+                      child: const Text(
+                        'LIMPIAR',
+                        style: TextStyle(
+                          color: Color(0xFFCC0000),
+                          fontSize: 12,
+                          letterSpacing: 1,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const Divider(color: Color(0xFF333333)),
+                const SizedBox(height: 8),
+
+                // Subgéneros
+                const Text(
+                  'SUBGÉNERO',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 11,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _metalTags.map((t) {
+                    final isSelected = tag == t;
+                    return GestureDetector(
+                      onTap: () =>
+                          ref.read(selectedTagProvider.notifier).state =
+                              isSelected ? null : t,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isSelected
+                              ? const Color(0xFFCC0000)
+                              : const Color(0xFF1A1A1A),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(
+                            color: isSelected
+                                ? const Color(0xFFCC0000)
+                                : const Color(0xFF444444),
+                          ),
+                        ),
+                        child: Text(
+                          t.toUpperCase(),
+                          style: TextStyle(
+                            fontSize: 11,
+                            letterSpacing: 0.5,
+                            color: isSelected ? Colors.white : Colors.grey,
+                            fontWeight: isSelected
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+                const SizedBox(height: 16),
+
+                // País
+                const Text(
+                  'PAÍS',
+                  style: TextStyle(
+                    color: Colors.grey,
+                    fontSize: 11,
+                    letterSpacing: 2,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Consumer(
+                  builder: (context, ref, _) {
+                    final country = ref.watch(selectedCountryProvider);
+                    final countries = ref.watch(availableCountriesProvider);
+                    return GestureDetector(
+                      onTap: () {
+                        showModalBottomSheet(
+                          context: context,
+                          backgroundColor: const Color(0xFF111111),
+                          builder: (context) => ListView(
+                            children: [
+                              ListTile(
+                                title: const Text(
+                                  'Todos los países',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onTap: () {
+                                  ref
+                                          .read(
+                                            selectedCountryProvider.notifier,
+                                          )
+                                          .state =
+                                      null;
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              ...countries.map(
+                                (e) => ListTile(
+                                  title: Text(
+                                    '${e.key}  ${e.value}',
+                                    style: const TextStyle(color: Colors.white),
+                                  ),
+                                  trailing: country == e.key
+                                      ? const Icon(
+                                          Icons.check,
+                                          color: Color(0xFFCC0000),
+                                        )
+                                      : null,
+                                  onTap: () {
+                                    ref
+                                        .read(selectedCountryProvider.notifier)
+                                        .state = e
+                                        .key;
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFF1A1A1A),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(
+                            color: country != null
+                                ? const Color(0xFFCC0000)
+                                : const Color(0xFF333333),
+                          ),
+                        ),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.flag,
+                              color: Colors.grey,
+                              size: 18,
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                country != null
+                                    ? countries
+                                          .firstWhere(
+                                            (e) => e.key == country,
+                                            orElse: () =>
+                                                MapEntry(country, country),
+                                          )
+                                          .value
+                                    : 'Todos los países',
+                                style: TextStyle(
+                                  color: country != null
+                                      ? Colors.white
+                                      : Colors.grey,
+                                  fontSize: 13,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.arrow_drop_down,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
