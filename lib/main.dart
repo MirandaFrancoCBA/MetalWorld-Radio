@@ -4,7 +4,6 @@ import 'package:audio_service/audio_service.dart';
 import 'core/player/audio_handler.dart';
 import 'core/player/radio_player.dart';
 import 'presentation/views/splash_page.dart';
-import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,8 +18,6 @@ Future<void> main() async {
     ),
   );
 
-  // ✅ Splash visible 3 segundos
-  await Future.delayed(const Duration(seconds: 3));
 
   runApp(
     ProviderScope(

@@ -187,7 +187,7 @@ class RadiosView extends ConsumerWidget {
                                       width: 40,
                                       height: 40,
                                       fit: BoxFit.cover,
-                                      errorWidget: (_, __, ___) =>
+                                      errorWidget: (_, _, _) =>
                                           _defaultIcon(isPlaying),
                                     )
                                   : _defaultIcon(isPlaying),
