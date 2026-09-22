@@ -1,192 +1,89 @@
 # 🤘 Metal World Radio
 
-A modern Flutter application for streaming **Metal radio stations** from around the world.  
-Built with **Flutter**, **Riverpod**, and **MediaKit**, featuring live streaming, favorites persistence, and a clean dark UI.
+Metal World Radio is a Flutter app for discovering and streaming Metal radio stations from around the world.
 
----
+## V1 status
 
-## 📱 Features
+The repository is being hardened for a stable V1 release. The app already includes the core product flow: station discovery, search and filters, favorites, foreground/background audio playback, Android media controls and a dark Metal-focused UI.
 
-- 🎸 Stream online Metal radio stations
-- ❤️ Save and manage favorite stations
-- ⏯️ Play / Pause / Stop controls
-- 📻 Mini player always visible
-- 🌐 Fetch stations dynamically from Radio Browser API
-- 💾 Persistent favorites using SharedPreferences
-- ⚡ State management with Riverpod
-- 🌙 Dark theme UI
+## Features
 
----
+- Stream Metal radio stations from the public Radio Browser API
+- Search stations by name
+- Filter by Metal subgenre and country
+- Save favorites locally with SharedPreferences
+- Persistent mini player with play, pause and stop controls
+- Background audio playback with Android media notification controls
+- Cached station artwork with graceful fallbacks
+- Dark responsive UI built with Flutter
 
-## 🚀 Technologies Used
+## Tech stack
 
-- Flutter
-- Dart
-- Flutter Riverpod
-- MediaKit
+- Flutter / Dart
+- Riverpod
+- just_audio
+- audio_service
 - HTTP
-- Shared Preferences
+- SharedPreferences
+- cached_network_image
 
----
+## Architecture
 
-## 📂 Project Structure
-
-```bash
+```text
 lib/
-│
 ├── core/
-│   └── player/
-│       └── radio_player.dart
-│
+│   └── player/          # audio handler + player state
 ├── data/
-│   ├── models/
-│   │   └── radio_station.dart
-│   └── services/
-│       ├── favorites_service.dart
-│       └── radio_api_service.dart
-│
+│   ├── models/          # RadioStation
+│   └── services/        # Radio Browser + favorites persistence
 ├── presentation/
-│   ├── providers/
-│   │   ├── favorites_provider.dart
-│   │   └── radio_provider.dart
-│   └── views/
-│       ├── favorites_view.dart
-│       ├── home_page.dart
-│       └── radios_view.dart
-│
+│   ├── providers/       # Riverpod state
+│   └── views/           # splash, stations, favorites, shell
 └── main.dart
-
-```
-## ⚙️ Installation
-
-### 1️⃣ Clone the repository
-
-```bash
-git clone https://github.com/yourusername/metal-world-radio.git
-cd metal-world-radio
 ```
 
-### 2️⃣ Install dependencies
+The project uses a small layered structure so API/persistence, playback logic and UI state remain separated.
+
+## Run locally
+
+Requirements: Flutter compatible with Dart SDK `^3.11.5` and an Android/iOS/desktop target supported by your local Flutter setup.
 
 ```bash
+git clone https://github.com/MirandaFrancoCBA/MetalWorld-Radio.git
+cd MetalWorld-Radio
 flutter pub get
-```
-
-### 3️⃣ Run the app
-
-```bash
 flutter run
 ```
 
----
-
-## 🔥 API Used
-
-This project uses the public:
-
-- Radio Browser API
-
-Example endpoint:
+## Quality checks
 
 ```bash
-https://de1.api.radio-browser.info/json/stations/bytag/metal
+flutter analyze
+flutter test
 ```
 
----
+GitHub Actions will run these checks on pushes and pull requests after the V1 hardening workflow is merged.
 
-## 📸 Screenshots
+## Data source
 
-> Add screenshots here later
+Stations are loaded from the public [Radio Browser](https://www.radio-browser.info/) API using the Metal tag. Availability and stream quality depend on third-party stations and the public API.
 
-```md
-![Home Screen](assets/screenshots/home.png)
-```
+## V1 release checklist
 
----
+- [x] Core station list and streaming flow
+- [x] Search and filters
+- [x] Favorites persistence
+- [x] Background playback and media controls
+- [ ] Automated CI and tests
+- [ ] Android application identity cleanup
+- [ ] Release build/device smoke test
+- [ ] GitHub V1.0.0 release
 
-## 🧠 Architecture
+## Author
 
-The project follows a simple layered architecture:
-
-### Presentation Layer
-- UI
-- Providers
-
-### Data Layer
-- Services
-- Models
-
-### Core Layer
-- Audio player logic
-
-This separation improves:
-
-- scalability
-- maintainability
-- readability
-
----
-
-## ❤️ Favorites System
-
-Favorite stations are stored locally using:
-
-```dart
-SharedPreferences
-```
-
-This allows users to keep their favorite stations saved between sessions.
-
----
-
-## 🎵 Audio Streaming
-
-Streaming is handled using:
-
-```dart
-media_kit
-```
-
-Features include:
-
-- play
-- pause
-- stop
-- reactive playback state
-
----
-
-## 📦 Main Dependencies
-
-```yaml
-flutter_riverpod: ^2.5.1
-media_kit: ^1.2.6
-http: ^1.2.0
-shared_preferences: ^2.2.2
-cached_network_image: ^3.3.0
-```
-
----
-
-## 🛠 Future Improvements
-
-- 🔍 Search radio stations
-- 🎨 Custom themes
-- 🌍 Genre filters
-- 📡 Background playback
-- 🔔 Media notifications
-- 🎧 Bluetooth controls
-- 📱 Responsive tablet layout
-- 🌐 Multi-language support
-
----
-
-## 👨‍💻 Author
-
-### Franco Rodrigo Miranda
-
-Junior Full Stack Developer from Argentina 🇦🇷
+**Franco Rodrigo Miranda**  
+Backend Developer | Python & Django — also building cross-platform applications with Flutter.
 
 - GitHub: https://github.com/MirandaFrancoCBA
 - LinkedIn: https://www.linkedin.com/in/franco-rodrigo-miranda-993710248
-
+- Portfolio: https://mirandafrancocba.github.io/Portfolio/
