@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.metal_world_radio"
+    namespace = "com.massedev.metalworldradio"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,12 +20,11 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.metal_world_radio"
-        // Cambia estas tres líneas:
+        applicationId = "com.massedev.metalworldradio"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = flutter.targetSdkVersion
+        versionCode = flutter.versionCode
+        versionName = flutter.versionName
     }
 
     buildTypes {
