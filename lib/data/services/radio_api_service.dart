@@ -14,13 +14,15 @@ class RadioApiException implements Exception {
 }
 
 class RadioApiService {
+  // Radio Browser mirrors documented by the service. Keep the server choice
+  // isolated here so discovery can be upgraded without touching consumers.
   static const _hosts = [
-    'de2.api.radio-browser.info',
-    'fi1.api.radio-browser.info',
     'de1.api.radio-browser.info',
     'at1.api.radio-browser.info',
     'nl1.api.radio-browser.info',
   ];
+
+  static const _requestTimeout = Duration(seconds: 30);
 
   final http.Client _client;
 
@@ -33,18 +35,20 @@ class RadioApiService {
       try {
         final uri = Uri.https(host, '/json/stations/bytag/metal', {
           'hidebroken': 'true',
+          'limit': '1000',
         });
+
         final response = await _client.get(
           uri,
           headers: const {
             'User-Agent': 'MetalWorldRadio/1.0',
             'Accept': 'application/json',
           },
-        ).timeout(const Duration(seconds: 8));
+        ).timeout(_requestTimeout);
 
         if (response.statusCode < 200 || response.statusCode >= 300) {
           lastError = RadioApiException(
-            'Radio Browser returned HTTP ${response.statusCode} from $host.',
+            'Radio Browser returned HTTP ${response.statusCode}.',
           );
           continue;
         }
@@ -52,7 +56,7 @@ class RadioApiService {
         final decoded = json.decode(response.body);
         if (decoded is! List) {
           lastError = const RadioApiException(
-            'Unexpected Radio Browser response.',
+            'Radio Browser returned an unexpected response.',
           );
           continue;
         }
@@ -64,6 +68,7 @@ class RadioApiService {
             .toList();
 
         if (stations.isNotEmpty) return stations;
+
         lastError = const RadioApiException(
           'Radio Browser returned no playable stations.',
         );
@@ -77,8 +82,8 @@ class RadioApiService {
     }
 
     throw RadioApiException(
-      'Unable to load radio stations after trying multiple Radio Browser servers'
-      '${lastError == null ? '.' : ': $lastError'}',
+      'Unable to load radio stations. Please check your connection and retry.'
+      '${lastError == null ? '' : ' ($lastError)'}',
     );
   }
 
